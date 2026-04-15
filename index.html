@@ -5,63 +5,134 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Lingüine Mayorista</title>
     
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#1E1410">
-
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
     <style>
-        body { margin: 0; background: #1E1410; color: #FAF6EE; font-family: sans-serif; }
-        #root { min-height: 100vh; display: flex; flex-direction: column; }
-        .card { background: #251610; padding: 20px; border-radius: 12px; border: 1px solid rgba(212,165,106,0.1); margin: 10px; cursor: pointer; }
-        h1 { font-size: 24px; text-align: center; margin-top: 40px; }
+        :root { --acc: #C4552A; --bg: #F7F3EE; --dark: #1E1410; --border: rgba(92,51,23,0.1); }
+        body { margin: 0; background: var(--dark); color: var(--bg); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        .container { padding: 20px; max-width: 600px; margin: 0 auto; }
+        .card { background: #251610; padding: 20px; border-radius: 16px; border: 1px solid var(--border); margin-bottom: 15px; cursor: pointer; transition: 0.2s; }
+        .card:active { transform: scale(0.98); }
+        .btn { background: var(--acc); color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; width: 100%; cursor: pointer; margin-top: 10px; }
+        .input-group { margin-bottom: 15px; }
+        input, select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border); background: #2F1D15; color: white; margin-top: 5px; }
+        .history-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+        .tag { padding: 2px 8px; border-radius: 4px; font-size: 10px; text-transform: uppercase; }
+        .tag-in { background: #2D4A22; color: #81C784; }
+        .tag-out { background: #4A2222; color: #E57373; }
     </style>
 </head>
 <body>
-    <div id="root">
-        <div style="display:flex; justify-content:center; align-items:center; height:100vh;">
-            <p>Cargando panel de producción...</p>
-        </div>
-    </div>
+    <div id="root"></div>
 
     <script type="text/babel">
-        const { useState } = React;
+        const { useState, useEffect } = React;
+
+        // CONFIGURACIÓN (Asegurate de que tus credenciales estén aquí)
+  // Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyAKkZVONXc4Lf2aRBVpvMpbEUKAI5FcNJI",
+  authDomain: "linguine-mayorista.firebaseapp.com",
+  projectId: "linguine-mayorista",
+  storageBucket: "linguine-mayorista.firebasestorage.app",
+  messagingSenderId: "35944390134",
+  appId: "1:35944390134:web:44e42fcd5721f6a20f3bd7",
+  measurementId: "G-46M93YHRJ1"
+};
+
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
 
         function App() {
             const [active, setActive] = useState(null);
-            
-            // Datos básicos para probar la visibilidad
+            const [movimientos, setMovimientos] = useState([]);
+            const [form, setForm] = useState({ tipo: 'Insumo', item: 'Harina', cantidad: '' });
+
             const clientes = [
-                { id: 1, nombre: "Casa Belucci", emoji: "🍝" },
-                { id: 2, nombre: "Mondongo y Coliflor", emoji: "🍲" },
-                { id: 3, nombre: "Casa Planes", emoji: "🍷" }
+                { id: 'belucci', nombre: "Casa Belucci", emoji: "🍝", color: "#C4552A" },
+                { id: 'mondongo', nombre: "Mondongo y Coliflor", emoji: "🍲", color: "#4A6741" },
+                { id: 'planes', nombre: "Casa Planes", emoji: "🍷", color: "#7B2D26" }
             ];
+
+            // Cargar datos de Firestore cuando entramos a un restaurante
+            useEffect(() => {
+                if (active) {
+                    const unsubscribe = db.collection('movimientos')
+                        .where('clienteId', '==', active.id)
+                        .orderBy('fecha', 'desc')
+                        .onSnapshot(snap => {
+                            const docs = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                            setMovimientos(docs);
+                        });
+                    return () => unsubscribe();
+                }
+            }, [active]);
+
+            const guardarMovimiento = async (e) => {
+                e.preventDefault();
+                if (!form.cantidad) return;
+                await db.collection('movimientos').add({
+                    clienteId: active.id,
+                    ...form,
+                    fecha: new Date().toISOString()
+                });
+                setForm({ ...form, cantidad: '' });
+            };
 
             if (active) {
                 return (
-                    <div style={{padding: '20px'}}>
-                        <button onClick={() => setActive(null)} style={{background: 'none', color: '#C4552A', border: '1px solid #C4552A', padding: '10px', borderRadius: '8px'}}>← Volver</button>
-                        <h2 style={{marginTop: '20px'}}>Panel de {active.nombre}</h2>
-                        <p>Aquí gestionaremos la materia prima y las entregas.</p>
+                    <div className="container">
+                        <button onClick={() => setActive(null)} style={{background: 'none', color: active.color, border: `1px solid ${active.color}`, padding: '8px 15px', borderRadius: '8px', cursor: 'pointer'}}>← Volver</button>
+                        <h2 style={{color: active.color, marginTop: '20px'}}>{active.emoji} {active.nombre}</h2>
+                        
+                        <form onSubmit={guardarMovimiento} className="card">
+                            <div className="input-group">
+                                <label>Tipo de Registro</label>
+                                <select value={form.tipo} onChange={e => setForm({...form, tipo: e.target.value})}>
+                                    <option value="Insumo">Entrada de Insumo (Harina/Huevo)</option>
+                                    <option value="Entrega">Salida de Pasta (Producto)</option>
+                                </select>
+                            </div>
+                            <div className="input-group">
+                                <label>Detalle</label>
+                                <input type="text" placeholder="Ej: Harina 0000 o Sorrentinos" value={form.item} onChange={e => setForm({...form, item: e.target.value})} />
+                            </div>
+                            <div className="input-group">
+                                <label>Cantidad (kg/un)</label>
+                                <input type="number" placeholder="0.00" value={form.cantidad} onChange={e => setForm({...form, cantidad: e.target.value})} />
+                            </div>
+                            <button className="btn" style={{background: active.color}}>Registrar Movimiento</button>
+                        </form>
+
+                        <h3>Historial Reciente</h3>
+                        {movimientos.map(m => (
+                            <div key={m.id} className="history-item">
+                                <div>
+                                    <span className={`tag ${m.tipo === 'Insumo' ? 'tag-in' : 'tag-out'}`}>{m.tipo}</span>
+                                    <strong style={{marginLeft: '10px'}}>{m.item}</strong>
+                                </div>
+                                <span>{m.cantidad}</span>
+                            </div>
+                        ))}
                     </div>
                 );
             }
 
             return (
-                <div style={{padding: '20px'}}>
-                    <h1>Lingüine Mayorista</h1>
-                    <p style={{textAlign: 'center', opacity: 0.6}}>Seleccioná un cliente para operar</p>
-                    <div style={{marginTop: '30px'}}>
-                        {clientes.map(c => (
-                            <div key={c.id} className="card" onClick={() => setActive(c)}>
-                                <span style={{fontSize: '24px'}}>{c.emoji}</span>
-                                <span style={{marginLeft: '15px', fontSize: '18px'}}>{c.nombre}</span>
-                            </div>
-                        ))}
-                    </div>
+                <div className="container">
+                    <h1 style={{textAlign: 'center', fontFamily: 'serif', marginTop: '40px'}}>Lingüine Mayorista</h1>
+                    <p style={{textAlign: 'center', opacity: 0.5, marginBottom: '40px'}}>Gestión de Producción</p>
+                    {clientes.map(c => (
+                        <div key={c.id} className="card" onClick={() => setActive(c)} style={{borderLeft: `5px solid ${c.color}`}}>
+                            <span style={{fontSize: '24px'}}>{c.emoji}</span>
+                            <span style={{marginLeft: '15px', fontSize: '18px', fontWeight: 'bold'}}>{c.nombre}</span>
+                        </div>
+                    ))}
                 </div>
             );
         }
