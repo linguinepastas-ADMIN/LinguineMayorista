@@ -1,0 +1,79 @@
+:root{
+  --acc:#c4552a;
+  --bg:#f7f3ee;
+  --dark:#1e1410;
+  --text:#1a0e08;
+  --muted:#6b4c35;
+  --border:rgba(92,51,23,.12);
+  --card:#fff;
+  --surface:#251610;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:"DM Sans",sans-serif;background:linear-gradient(180deg,#24150f 0%,#1e1410 100%);color:var(--text)}
+button,input,select,textarea{font:inherit}
+button{border:none}
+.brand{font-family:"Fraunces",serif}
+.boot-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.boot-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:32px;min-width:min(520px,100%);text-align:center}
+.boot-card .brand{font-size:34px;color:#faf6ee}
+.boot-message{color:rgba(212,165,106,.7);margin:12px 0 0}
+.layout{display:grid;grid-template-columns:240px 1fr;min-height:100vh;background:var(--bg)}
+.sidebar{background:var(--dark);color:#faf6ee;padding:18px 14px;border-right:1px solid rgba(255,255,255,.05)}
+.sidebar-title{font-family:"Fraunces",serif;font-size:18px;margin-bottom:2px}
+.sidebar-desc{font-size:12px;color:rgba(212,165,106,.5);margin-bottom:18px}
+.nav-btn,.ghost-btn,.primary-btn,.danger-btn{border-radius:10px;cursor:pointer}
+.nav-btn{width:100%;text-align:left;background:none;color:rgba(250,246,238,.65);padding:10px 12px;margin-bottom:4px}
+.nav-btn.active,.nav-btn:hover{background:rgba(255,255,255,.08);color:#fff}
+.back-btn{width:100%;margin-top:14px;background:rgba(255,255,255,.06);color:#fff;padding:10px 12px;border-radius:10px;cursor:pointer}
+.main{padding:24px}
+.home{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px}
+.home-title{font-family:"Fraunces",serif;font-size:34px;color:#faf6ee}
+.home-subtitle{margin-top:8px;color:rgba(212,165,106,.55);text-transform:uppercase;letter-spacing:.18em;font-size:11px}
+.restaurant-grid{width:min(980px,100%);display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:36px}
+.restaurant-card{background:var(--surface);border:1px solid rgba(212,165,106,.08);border-radius:16px;padding:20px;color:#faf6ee;cursor:pointer;transition:.18s transform,.18s box-shadow;position:relative}
+.restaurant-card:hover{transform:translateY(-4px);box-shadow:0 18px 50px rgba(0,0,0,.35)}
+.restaurant-card::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;border-radius:16px 16px 0 0;background:var(--rcolor)}
+.restaurant-card.add-card{display:flex;align-items:center;justify-content:center;border:1.5px dashed rgba(212,165,106,.2);background:transparent;color:rgba(212,165,106,.6)}
+.restaurant-emoji{font-size:30px;display:block;margin-bottom:10px}
+.restaurant-name{font-family:"Fraunces",serif;font-size:20px}
+.restaurant-desc{margin-top:6px;color:rgba(212,165,106,.55);font-size:13px;line-height:1.5}
+.page-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap;margin-bottom:18px}
+.page-title{font-family:"Fraunces",serif;font-size:28px}
+.page-subtitle{color:var(--muted);font-size:14px;margin-top:4px}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap}
+.primary-btn{background:var(--acc);color:#fff;padding:10px 14px}
+.ghost-btn{background:transparent;border:1px solid rgba(92,51,23,.18);color:var(--muted);padding:10px 14px}
+.danger-btn{background:#fdecec;color:#b02020;padding:8px 10px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:16px}
+.stat-card,.panel{background:var(--card);border:1px solid var(--border);border-radius:14px}
+.stat-card{padding:16px}
+.stat-card label{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+.stat-card strong{display:block;font-family:"Fraunces",serif;font-size:30px;margin-top:4px}
+.split,.double{display:grid;grid-template-columns:1.3fr .9fr;gap:14px}
+.double{grid-template-columns:1fr 1fr}
+.panel{padding:16px}
+.panel h3{margin:0 0 12px;font-family:"Fraunces",serif;font-size:18px}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse}
+th,td{padding:10px 8px;border-bottom:1px solid rgba(92,51,23,.08);text-align:left;font-size:13px}
+th{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+tr:last-child td{border-bottom:none}
+.empty{padding:28px;text-align:center;color:var(--muted)}
+.badge{display:inline-block;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:700}
+.badge.ok{background:#e5f5ec;color:#2a7a45}
+.badge.low{background:#fff3e0;color:#a06020}
+.badge.out{background:#fdecec;color:#b02020}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+.field label{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
+.field input,.field select,.field textarea{width:100%;padding:10px;border:1px solid rgba(92,51,23,.18);border-radius:10px;background:#faf6ee}
+.field.full{grid-column:1 / -1}
+.helper{font-size:12px;color:var(--muted);margin-top:10px}
+.flash{padding:12px 14px;border-radius:12px;margin-bottom:14px;font-size:14px}
+.flash.ok{background:#e5f5ec;color:#2a7a45}
+.flash.err{background:#fdecec;color:#b02020}
+.row-actions{display:flex;gap:6px}
+.code-box{background:#fff;border:1px solid var(--border);border-radius:12px;padding:16px;white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,monospace;font-size:13px}
+@media (max-width: 920px){
+  .layout{grid-template-columns:1fr}
+  .split,.double{grid-template-columns:1fr}
+}
