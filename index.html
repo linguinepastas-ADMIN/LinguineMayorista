@@ -7,134 +7,58 @@
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#1E1410">
 
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
     <style>
-        /* Aquí va el CSS que ya tenías definido, lo mantengo intacto para respetar tu diseño */
-        *{box-sizing:border-box;margin:0;padding:0}
-        html,body,#root{height:100%;font-family:'DM Sans',sans-serif;background:#1E1410}
-        :root{--acc:#C4552A;--bg:#F7F3EE;--dark:#1E1410;--text:#1A0E08;--muted:#6B4C35;--border:rgba(92,51,23,0.12);--fd:'Fraunces',Georgia,serif}
-        
-        /* (Agrego solo el estilo del cargador inicial) */
-        .loading-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; color: #FAF6EE; }
-        .spinner { width: 40px; height: 40px; border: 4px solid rgba(212,165,106,.1); border-top-color: var(--acc); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* ... El resto de tus estilos CSS (Home, Inner, Cards, etc.) irían aquí ... */
-        /* Para no hacer este mensaje infinito, asumo que mantienes el bloque de <style> que me pasaste */
+        body { margin: 0; background: #1E1410; color: #FAF6EE; font-family: sans-serif; }
+        #root { min-height: 100vh; display: flex; flex-direction: column; }
+        .card { background: #251610; padding: 20px; border-radius: 12px; border: 1px solid rgba(212,165,106,0.1); margin: 10px; cursor: pointer; }
+        h1 { font-size: 24px; text-align: center; margin-top: 40px; }
     </style>
 </head>
 <body>
-    <div id="root"></div>
+    <div id="root">
+        <div style="display:flex; justify-content:center; align-items:center; height:100vh;">
+            <p>Cargando panel de producción...</p>
+        </div>
+    </div>
 
     <script type="text/babel">
-        const { useState, useEffect, useCallback, useMemo } = React;
+        const { useState } = React;
 
-        /* ─── CONFIGURACIÓN FIREBASE ─── */
-        const firebaseConfig = {
-            // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyAKkZVONXc4Lf2aRBVpvMpbEUKAI5FcNJI",
-  authDomain: "linguine-mayorista.firebaseapp.com",
-  projectId: "linguine-mayorista",
-  storageBucket: "linguine-mayorista.firebasestorage.app",
-  messagingSenderId: "35944390134",
-  appId: "1:35944390134:web:44e42fcd5721f6a20f3bd7",
-  measurementId: "G-46M93YHRJ1"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-        };
-
-        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
-        /* ─── UTILIDADES DE DATOS ─── */
-        const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,5);
-
-        // Nueva lógica de persistencia en Firestore
-        async function cloudGet(k, fb) {
-            try {
-                const doc = await db.collection('settings').doc(k).get();
-                return doc.exists ? doc.data().value : fb;
-            } catch(e) { return fb; }
-        }
-
-        async function cloudSet(k, v) {
-            try {
-                await db.collection('settings').doc(k).set({ value: v, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
-            } catch(e) { console.error("Error al guardar:", e); }
-        }
-
-        /* ─── COMPONENTE PRINCIPAL ─── */
         function App() {
-            const [rests, setRests] = useState(null);
             const [active, setActive] = useState(null);
-            const [loading, setLoading] = useState(true);
-
-            // Cargar restaurantes al inicio
-            useEffect(() => {
-                const loadRests = async () => {
-                    const data = await cloudGet("restaurants", [
-                        {id:"ra",nombre:"Restaurante Azul",emoji:"🍝",color:"#1E5F9E",desc:"Pasta fresca artesanal"}
-                    ]);
-                    setRests(data);
-                    setLoading(false);
-                };
-                loadRests();
-            }, []);
-
-            // Guardar cambios en restaurantes
-            const updateRests = async (newRests) => {
-                setRests(newRests);
-                await cloudSet("restaurants", newRests);
-            };
-
-            if (loading) return (
-                <div className="loading-screen">
-                    <div className="spinner"></div>
-                    <p style={{fontSize: '11px', letterSpacing: '0.2em', textTransform: 'uppercase', opacity: 0.5}}>Sincronizando Lingüine</p>
-                </div>
-            );
+            
+            // Datos básicos para probar la visibilidad
+            const clientes = [
+                { id: 1, nombre: "Casa Belucci", emoji: "🍝" },
+                { id: 2, nombre: "Mondongo y Coliflor", emoji: "🍲" },
+                { id: 3, nombre: "Casa Planes", emoji: "🍷" }
+            ];
 
             if (active) {
                 return (
-                    <div className="inner" style={{"--acc": active.color}}>
-                        {/* Aquí renderizarías tu componente RestApp que ya tienes diseñado */}
-                        <div style={{padding: '40px', color: 'white'}}>
-                            <button onClick={() => setActive(null)} className="btn btn-g">← Volver</button>
-                            <h1 style={{marginTop: '20px'}}>{active.emoji} Panel de {active.nombre}</h1>
-                            <p>Conectado a Firebase Cloud Firestore.</p>
-                        </div>
+                    <div style={{padding: '20px'}}>
+                        <button onClick={() => setActive(null)} style={{background: 'none', color: '#C4552A', border: '1px solid #C4552A', padding: '10px', borderRadius: '8px'}}>← Volver</button>
+                        <h2 style={{marginTop: '20px'}}>Panel de {active.nombre}</h2>
+                        <p>Aquí gestionaremos la materia prima y las entregas.</p>
                     </div>
                 );
             }
 
             return (
-                <div className="home-wrap" style={{background: '#1E1410', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
-                    <h1 style={{fontFamily: 'Fraunces', color: '#FAF6EE', marginBottom: '10px'}}>Lingüine Mayorista</h1>
-                    <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px', width: '100%', maxWidth: '600px', padding: '20px'}}>
-                        {rests.map(r => (
-                            <div key={r.id} onClick={() => setActive(r)} style={{background: '#251610', padding: '20px', borderRadius: '15px', cursor: 'pointer', border: '1px solid rgba(212,165,106,0.1)'}}>
-                                <span style={{fontSize: '30px'}}>{r.emoji}</span>
-                                <h3 style={{color: 'white', marginTop: '10px'}}>{r.nombre}</h3>
+                <div style={{padding: '20px'}}>
+                    <h1>Lingüine Mayorista</h1>
+                    <p style={{textAlign: 'center', opacity: 0.6}}>Seleccioná un cliente para operar</p>
+                    <div style={{marginTop: '30px'}}>
+                        {clientes.map(c => (
+                            <div key={c.id} className="card" onClick={() => setActive(c)}>
+                                <span style={{fontSize: '24px'}}>{c.emoji}</span>
+                                <span style={{marginLeft: '15px', fontSize: '18px'}}>{c.nombre}</span>
                             </div>
                         ))}
                     </div>
